@@ -1,0 +1,167 @@
+Index: warehouse_dataset1.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import csv\nimport pandas\n\n\ndef reading_func(date_csv):\n    with open(date_csv, 'r') as f:\n        reader = csv.reader(f)\n        data_table = list(reader)\n        return data_table\n\n\ndef create_matrix(data_table):\n    products_list = []\n    for i, value in enumerate(data_table):\n        if data_table[i][3] in products_list:\n            continue\n        else:\n            products_list.append(data_table[i][3])\n    datetime_list = []\n    for i, value in enumerate(data_table):\n        if data_table[i][4] in products_list:\n            continue\n        else:\n            datetime_list.append(data_table[i][4])\n    datetime_array = []\n    for value in datetime_list:\n        datetime_split = value.split()\n        datetime_array.append(datetime_split)\n\n\ncreate_matrix(reading_func('online_retail_II.csv'))\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/warehouse_dataset1.py b/warehouse_dataset1.py
+--- a/warehouse_dataset1.py	(revision 0158ce0afa1844f3a75b2782d9b9d0c8dba7910c)
++++ b/warehouse_dataset1.py	(date 1622911486472)
+@@ -1,31 +1,43 @@
+ import csv
++import time
+ import pandas
+ 
+-
+ def reading_func(date_csv):
+     with open(date_csv, 'r') as f:
+         reader = csv.reader(f)
+         data_table = list(reader)
+         return data_table
+ 
+-
+ def create_matrix(data_table):
+     products_list = []
+     for i, value in enumerate(data_table):
+-        if data_table[i][3] in products_list:
++        if i == 0 or data_table[i][2] in products_list:
+             continue
+         else:
+-            products_list.append(data_table[i][3])
++            products_list.append(data_table[i][2])
+     datetime_list = []
+     for i, value in enumerate(data_table):
+-        if data_table[i][4] in products_list:
++        if i == 0 or data_table[i][4] in datetime_list:
+             continue
+         else:
+             datetime_list.append(data_table[i][4])
+-    datetime_array = []
+-    for value in datetime_list:
+-        datetime_split = value.split()
+-        datetime_array.append(datetime_split)
++    date_array = []
++    time_array = []
++    for i, datetime in enumerate(datetime_list):
++        datetime_split = datetime.split()
++        date_array.append(datetime_split[0])
++        time_array.append(datetime_split[1])
++    matrix = pandas.DataFrame(index=[date_array, time_array], columns=products_list)
++    for i, value in enumerate(data_table):
++        if value[4] in datetime_list and value[2] in products_list:
++            if int(value[3]) <= 0:
++                continue
++            else: matrix.iloc[datetime_list.index(value[4]), products_list.index(value[2])] = value[3]
++    return matrix
+ 
+ 
+-create_matrix(reading_func('online_retail_II.csv'))
++
++start_time = time.time()
++dataframe_result = create_matrix(reading_func('online_retail_II.csv'))
++dataframe_result.to_excel('result.xlsx')
++print("--- %s seconds ---" % (time.time() - start_time))
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"59b7ad77-846e-4644-9efb-131b4e607857\" name=\"Default Changelist\" comment=\"first step\" />\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"Python Script\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"ProjectId\" id=\"1r86iQN5HyxOd8AlKln4C0U0oN0\" />\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\">\n    <property name=\"RunOnceActivity.OpenProjectViewOnStart\" value=\"true\" />\n    <property name=\"RunOnceActivity.ShowReadmeOnStart\" value=\"true\" />\n    <property name=\"settings.editor.selected.configurable\" value=\"com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable\" />\n  </component>\n  <component name=\"RunManager\">\n    <configuration name=\"warehouse_dataset1\" type=\"PythonConfigurationType\" factoryName=\"Python\" nameIsGenerated=\"true\">\n      <module name=\"warehouse\" />\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\n      <option name=\"PARENT_ENVS\" value=\"true\" />\n      <envs>\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\n      </envs>\n      <option name=\"SDK_HOME\" value=\"$PROJECT_DIR$/../.conda/envs/warehouse/bin/python\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$\" />\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/warehouse_dataset1.py\" />\n      <option name=\"PARAMETERS\" value=\"\" />\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\n      <option name=\"MODULE_MODE\" value=\"false\" />\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\n      <option name=\"INPUT_FILE\" value=\"\" />\n      <method v=\"2\" />\n    </configuration>\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"59b7ad77-846e-4644-9efb-131b4e607857\" name=\"Default Changelist\" comment=\"\" />\n      <created>1618345495247</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1618345495247</updated>\n    </task>\n    <servers />\n  </component>\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State />\n          </value>\n        </entry>\n      </map>\n    </option>\n    <option name=\"oldMeFiltersMigrated\" value=\"true\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 0158ce0afa1844f3a75b2782d9b9d0c8dba7910c)
++++ b/.idea/workspace.xml	(date 1622913439853)
+@@ -1,7 +1,11 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="ChangeListManager">
+-    <list default="true" id="59b7ad77-846e-4644-9efb-131b4e607857" name="Default Changelist" comment="first step" />
++    <list default="true" id="59b7ad77-846e-4644-9efb-131b4e607857" name="Default Changelist" comment="first step">
++      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/warehouse_dataset1.py" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse_dataset1.py" afterDir="false" />
++    </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+@@ -15,9 +19,14 @@
+     </option>
+   </component>
+   <component name="Git.Settings">
++    <option name="PATH_TO_GIT" value="/usr/local/git/bin/git" />
++    <option name="PREVIEW_PUSH_PROTECTED_ONLY" value="true" />
+     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
++    <option name="ROOT_SYNC" value="SYNC" />
++    <option name="UPDATE_TYPE" value="REBASE" />
+   </component>
+   <component name="ProjectId" id="1r86iQN5HyxOd8AlKln4C0U0oN0" />
++  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+   <component name="ProjectViewState">
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+@@ -25,7 +34,7 @@
+   <component name="PropertiesComponent">
+     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
++    <property name="settings.editor.selected.configurable" value="vcs.Git" />
+   </component>
+   <component name="RunManager">
+     <configuration name="warehouse_dataset1" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+@@ -66,11 +75,34 @@
+       <map>
+         <entry key="MAIN">
+           <value>
+-            <State />
++            <State>
++              <option name="FILTERS">
++                <map>
++                  <entry key="branch">
++                    <value>
++                      <list>
++                        <option value="origin/main" />
++                      </list>
++                    </value>
++                  </entry>
++                </map>
++              </option>
++            </State>
+           </value>
+         </entry>
+       </map>
+     </option>
+     <option name="oldMeFiltersMigrated" value="true" />
+   </component>
++  <component name="XDebuggerManager">
++    <breakpoint-manager>
++      <breakpoints>
++        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
++          <url>file://$PROJECT_DIR$/warehouse_dataset1.py</url>
++          <line>2</line>
++          <option name="timeStamp" value="1" />
++        </line-breakpoint>
++      </breakpoints>
++    </breakpoint-manager>
++  </component>
+ </project>
+\ No newline at end of file
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"VcsDirectoryMappings\">\n    <mapping directory=\"$PROJECT_DIR$\" vcs=\"Git\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+--- a/.idea/vcs.xml	(revision 0158ce0afa1844f3a75b2782d9b9d0c8dba7910c)
++++ b/.idea/vcs.xml	(date 1622911277345)
+@@ -2,5 +2,6 @@
+ <project version="4">
+   <component name="VcsDirectoryMappings">
+     <mapping directory="$PROJECT_DIR$" vcs="Git" />
++    <mapping directory="$PROJECT_DIR$/warehouse" vcs="Git" />
+   </component>
+ </project>
+\ No newline at end of file
