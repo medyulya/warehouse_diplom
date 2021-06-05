@@ -3,13 +3,11 @@ import time
 import pandas
 
 
-
 def reading_func(date_csv):
     with open(date_csv, 'r') as f:
         reader = csv.reader(f)
         data_table = list(reader)
         return data_table
-
 
 def create_matrix(data_table):
     products_list = []
@@ -38,7 +36,23 @@ def create_matrix(data_table):
             else: matrix.iloc[datetime_list.index(value[4]), products_list.index(value[2])] = value[3]
     return matrix
 
+def time_series_day(dataframe):
+    indeсes = []
+    data = []
+    for date, time in dataframe.index:
+        if date in indeсes:
+            continue
+        else: indeсes.append(date)
+    for i, datetime in enumerate(dataframe.index):
+        if datetime[0] in indeсes:
+            for j, value in enumerate(indeсes):
+                data[j].append(dataframe[i][1])
+    print(indeсes)
+    time_series_array = pandas.DataFrame(index=indeсes)
+
+
 start_time = time.time()
-dataframe_result = create_matrix(reading_func('online_retail_II.csv'))
-dataframe_result.to_excel('result.xlsx')
+dataframe_result = create_matrix(reading_func('test.csv'))
+#dataframe_result.to_csv('result.csv')
 print("--- %s seconds ---" % (time.time() - start_time))
+time_series_day(dataframe_result)
