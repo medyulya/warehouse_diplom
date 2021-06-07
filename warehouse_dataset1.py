@@ -1,6 +1,8 @@
 import csv
 import time
 import pandas
+from concurrent.futures import ThreadPoolExecutor
+import random
 
 
 def reading_func(date_csv):
@@ -39,20 +41,38 @@ def create_matrix(data_table):
 def time_series_day(dataframe):
     indeсes = []
     data = []
+    times_all = []
     for date, time in dataframe.index:
+        times_all.append(time)
         if date in indeсes:
             continue
         else: indeсes.append(date)
-    for i, datetime in enumerate(dataframe.index):
-        if datetime[0] in indeсes:
-            for j, value in enumerate(indeсes):
-                data[j].append(dataframe[i][1])
-    print(indeсes)
-    time_series_array = pandas.DataFrame(index=indeсes)
+    for i, value in enumerate(indeсes):
+        data.append([])
+        for j, value2 in enumerate(dataframe.index):
+            if value2[0] == value:
+                data[i].append(value2[1])
+    time_series_array = pandas.DataFrame(data=data, index=indeсes)
+    return time_series_array, times_all
+    print(time_series_array)
+    print(times_all)
+
+def random_time(times_array, times_list):
+    random_times_list = []
+    i = 1
+    while i <= len(times_list)//len(times_array):
+        random_times_list.append(random.choice(times_list))
+        i += 1
+    print(random_times_list)
+
+
 
 
 start_time = time.time()
-dataframe_result = create_matrix(reading_func('test.csv'))
+with ThreadPoolExecutor(16) as p:
+    dataframe_result = create_matrix(reading_func('test.csv'))
 #dataframe_result.to_csv('result.csv')
+t1, t2 = time_series_day(dataframe_result)
+random_time(t1,t2)
 print("--- %s seconds ---" % (time.time() - start_time))
-time_series_day(dataframe_result)
+#--- 8696.000891923904 seconds --- без потоков
