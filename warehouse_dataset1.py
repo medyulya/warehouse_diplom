@@ -64,13 +64,12 @@ def random_time(times_array, times_list):
         random_times_list.append(random.choice(times_list))
         i += 1
     print(random_times_list)
-
-
+    return random_times_list
 
 
 start_time = time.time()
 with ThreadPoolExecutor(16) as p:
-    dataframe_result = create_matrix(reading_func('test.csv'))
+    dataframe_result = create_matrix(reading_func('online_retail_II.csv'))
 #dataframe_result.to_csv('result.csv')
 t1, t2 = time_series_day(dataframe_result)
 random_time(t1,t2)
