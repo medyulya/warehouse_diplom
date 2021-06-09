@@ -59,19 +59,32 @@ def time_series_day(dataframe):
 
 def random_time(times_array, times_list):
     random_times_list = []
-    i = 1
-    while i <= len(times_list)//len(times_array):
-        random_times_list.append(random.choice(times_list))
+    i = 0
+    while i < len(times_list)//len(times_array):
+        t = random.choice(times_list)
+        if t in random_times_list:
+            continue
+        else: random_times_list.append(t)
         i += 1
-    print(random_times_list)
     return random_times_list
+
+def random_data(dataframe, random_times_list):
+    count_element = len(dataframe)
+    data_list_number = []
+    i = 0
+    while i < len(random_times_list):
+        t = random.randrange(0, count_element)
+        data_list_number.append(t)
+        i += 1
+    new_dataframe = dataframe.iloc[data_list_number]
+    new_dataframe.index = random_times_list
+    return new_dataframe
 
 
 start_time = time.time()
-with ThreadPoolExecutor(16) as p:
-    dataframe_result = create_matrix(reading_func('online_retail_II.csv'))
+dataframe_result = create_matrix(reading_func('test.csv'))
 #dataframe_result.to_csv('result.csv')
 t1, t2 = time_series_day(dataframe_result)
-random_time(t1,t2)
+x = random_time(t1,t2)
+print(random_data(dataframe_result, x))
 print("--- %s seconds ---" % (time.time() - start_time))
-#--- 8696.000891923904 seconds --- без потоков
