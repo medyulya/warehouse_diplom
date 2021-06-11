@@ -1,7 +1,6 @@
 import csv
 import time
 import pandas
-from concurrent.futures import ThreadPoolExecutor
 import random
 
 
@@ -35,7 +34,7 @@ def create_matrix(data_table):
         if value[4] in datetime_list and value[2] in products_list:
             if int(value[3]) <= 0:
                 continue
-            else: matrix.iloc[datetime_list.index(value[4]), products_list.index(value[2])] = value[3]
+            else: matrix.iloc[datetime_list.index(value[4]), products_list.index(value[2])] = int(value[3])
     return matrix
 
 def time_series_day(dataframe):
@@ -54,8 +53,6 @@ def time_series_day(dataframe):
                 data[i].append(value2[1])
     time_series_array = pandas.DataFrame(data=data, index=indeсes)
     return time_series_array, times_all
-    print(time_series_array)
-    print(times_all)
 
 def random_time(times_array, times_list):
     random_times_list = []
@@ -80,11 +77,22 @@ def random_data(dataframe, random_times_list):
     new_dataframe.index = random_times_list
     return new_dataframe
 
+def amount_items_days(dataframe):
+    amount_data = dataframe.groupby(level=0).sum()
+    return amount_data
+
+
+
 
 start_time = time.time()
-dataframe_result = create_matrix(reading_func('test.csv'))
-#dataframe_result.to_csv('result.csv')
-t1, t2 = time_series_day(dataframe_result)
-x = random_time(t1,t2)
-print(random_data(dataframe_result, x))
+reading = reading_func('test.csv')                      # Чтение входного датесета
+dataframe_result = create_matrix(reading)               # Подготовка датасета к обработке
+t1, t2 = time_series_day(dataframe_result)              # Возвращает датафрейм с временем: индексы даты;
+                                                        # Массив со всеми моментами времени
+x = random_time(t1,  t2)                                # Возвращает среднее количество рандомых моментов времени
+z = random_data(dataframe_result, x)                    # Возвращает датафрейм с рандомным списком продуктов,
+                                                        # индексы моменты времени из предыдущего шага
+amount_data = amount_items_days(dataframe_result)       # итоговое количество всех товаров на конец дня
+amount_data.to_csv('result.csv')
+#print(amount_data.std())
 print("--- %s seconds ---" % (time.time() - start_time))
